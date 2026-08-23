@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bookmark & Collection Vault</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-body: #f4f0ea;
+      --bg-card: #ffffff;
+      --border-black: #000000;
+      --border-width: 3px;
+      --shadow-offset: 5px;
+      --radius: 16px;
+      --font-main: 'Plus Jakarta Sans', sans-serif;
+      
+      /* Palette Warna Neo Brutalism */
+      --c-yellow: #facc15;
+      --c-green: #4ade80;
+      --c-pink: #f472b6;
+      --c-purple: #a78bfa;
+      --c-blue: #38bdf8;
+      --c-orange: #fb923c;
+      --c-lime: #a3e635;
+      --c-red: #ff5252;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-main);
+    }
+
+    body {
+      background-color: var(--bg-body);
+      color: #000000;
+      min-height: 100vh;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Full-width Responsive Main Layout Container */
+    .app-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* Top Navigation Header */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-badge {
+      background: var(--c-yellow);
+      border: var(--border-width) solid var(--border-black);
+      box-shadow: 3px 3px 0px var(--border-black);
+      border-radius: 10px;
+      padding: 4px 10px;
+      font-size: 1rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    /* Neo-Brutalist Button Style */
+    .btn-neo {
+      background: #ffffff;
+      border: var(--border-width) solid var(--border-black);
+      box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--border-black);
+      border-radius: 14px;
+      padding: 10px 18px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.1s ease;
+      user-select: none;
+    }
+
+    .btn-neo:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: calc(var(--shadow-offset) + 2px) calc(var(--shadow-offset) + 2px) 0px var(--border-black);
+    }
+
+    .btn-neo:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px var(--border-black);
+    }
+
+    .btn-neo-yellow { background: var(--c-yellow); }
+    .btn-neo-green { background: var(--c-green); }
+    .btn-neo-pink { background: var(--c-pink); }
+    .btn-neo-danger { background: var(--c-red); color: white; }
+
+    /* Hero / Title Header */
+    .hero-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -1px;
+    }
+
+    .hero-subtitle {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #444;
+    }
+
+    /* Input Link Bar Section */
+    .save-box-wrapper {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .input-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      border: var(--border-width) solid var(--border-black);
+      box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--border-black);
+      border-radius: 16px;
+      padding: 4px 16px;
+    }
+
+    .input-hash {
+      font-weight: 900;
+      font-size: 1.3rem;
+      margin-right: 12px;
+      color: #666;
+    }
+
+    .input-container input {
+      border: none;
+      outline: none;
+      width: 100%;
+      padding: 14px 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      background: transparent;
+    }
+
+    .btn-paste-icon {
+      background: var(--c-yellow);
+      border: 2px solid var(--border-black);
+      box-shadow: 2px 2px 0px var(--border-black);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .btn-add-main {
+      font-size: 1.8rem;
+      line-height: 1;
+      padding: 0 24px;
+    }
+
+    /* Filter & Search Bar */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-input-box {
+      background: #fff;
+      border: 2px solid var(--border-black);
+      box-shadow: 3px 3px 0px var(--border-black);
+      border-radius: 12px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-input-box input {
+      border: none;
+      outline: none;
+      font-weight: 700;
+      font-size: 0.9rem;
+      width: 180px;
+    }
+
+    /* Grid Layout for Collections (Responsive Auto Grid) */
+    .collections-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    /* Folder Card Neo-Brutalist Style */
+    .card-item {
+      position: relative;
+      background: #ffffff;
+      border: var(--border-width) solid var(--border-black);
+      box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--border-black);
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 180px;
+      transition: all 0.15 ease;
+    }
+
+    .card-item:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: calc(var(--shadow-offset) + 3px) calc(var(--shadow-offset) + 3px) 0px var(--border-black);
+    }
+
+    /* Tab folder style on top */
+    .card-tab {
+      position: absolute;
+      top: -14px;
+      left: 18px;
+      height: 14px;
+      width: 80px;
+      border-top: var(--border-width) solid var(--border-black);
+      border-left: var(--border-width) solid var(--border-black);
+      border-right: var(--border-width) solid var(--border-black);
+      border-radius: 8px 8px 0 0;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .card-icon-box {
+      width: 52px;
+      height: 52px;
+      border: var(--border-width) solid var(--border-black);
+      box-shadow: 3px 3px 0px var(--border-black);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      user-select: none;
+    }
+
+    .card-badge {
+      background: #f0f0f0;
+      border: 2px solid var(--border-black);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .card-body {
+      margin-top: 16px;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 900;
+      line-height: 1.2;
+      color: #000;
+      word-break: break-word;
+    }
+
+    .card-url-preview {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #666;
+      margin-top: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .btn-card-action {
+      flex: 1;
+      padding: 8px;
+      font-size: 0.85rem;
+      border: 2px solid var(--border-black);
+      box-shadow: 2px 2px 0px var(--border-black);
+      border-radius: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      background: #ffffff;
+    }
+
+    .btn-card-action:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0px var(--border-black);
+    }
+
+    /* Modal Styling */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 16px;
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal-window {
+      background: var(--bg-body);
+      border: var(--border-width) solid var(--border-black);
+      box-shadow: 8px 8px 0px var(--border-black);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 460px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      animation: modalPop 0.15s ease-out;
+    }
+
+    @keyframes modalPop {
+      0% { transform: scale(0.92); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: 900;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input {
+      border: 2.5px solid var(--border-black);
+      box-shadow: 3px 3px 0px var(--border-black);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      outline: none;
+      background: #ffffff;
+    }
+
+    /* Emoji Picker Quick Grid */
+    .emoji-picker-list {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .emoji-chip {
+      width: 38px;
+      height: 38px;
+      border: 2px solid var(--border-black);
+      box-shadow: 2px 2px 0px var(--border-black);
+      border-radius: 10px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .emoji-chip:hover {
+      background: var(--c-yellow);
+    }
+
+    /* Color Chips Selection */
+    .color-picker-list {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .color-chip {
+      width: 32px;
+      height: 32px;
+      border: 2.5px solid var(--border-black);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 2px 2px 0px var(--border-black);
+      transition: transform 0.1s ease;
+    }
+
+    .color-chip.selected {
+      transform: scale(1.2);
+      box-shadow: 0 0 0 3px #000;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    #file-import-input {
+      display: none;
+    }
+
+    /* Empty state */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px 20px;
+      background: #ffffff;
+      border: var(--border-width) solid var(--border-black);
+      box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--border-black);
+      border-radius: 20px;
+    }
+
+    .empty-state h3 {
+      font-size: 1.2rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      body {
+        padding: 16px 12px;
+      }
+      .save-box-wrapper {
+        flex-direction: column;
+      }
+      .btn-add-main {
+        width: 100%;
+        padding: 12px;
+      }
+      .collections-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Navigation / Toolbar -->
+    <header class="top-nav">
+      <div class="brand-logo">
+        <span>⚡ BookmarkVault</span>
+        <span class="brand-badge">PAW</span>
+      </div>
+      <div class="nav-actions">
+        <button class="btn-neo" id="btn-export-json" title="Export JSON">
+          <span>📥</span> Export JSON
+        </button>
+        <button class="btn-neo" id="btn-import-trigger" title="Import JSON">
+          <span>📤</span> Import JSON
+        </button>
+        <input type="file" id="file-import-input" accept=".json" />
+      </div>
+    </header>
+
+    <!-- Hero Title -->
+    <section class="hero-section">
+      <h1 class="hero-title">Save now. Find anytime.</h1>
+      <p class="hero-subtitle">Tempel link kamu untuk langsung membuat folder koleksi baru secara otomatis.</p>
+    </section>
+
+    <!-- Input Bar -->
+    <section class="save-box-wrapper">
+      <div class="input-container">
+        <span class="input-hash">#</span>
+        <input type="text" id="main-url-input" placeholder="Paste or type link (e.g. https://instagram.com/...)" />
+        <button class="btn-paste-icon" id="btn-paste-clipboard" type="button">
+          📋 Paste
+        </button>
+      </div>
+      <button class="btn-neo btn-neo-yellow btn-add-main" id="btn-add-collection" title="Tambah Folder Baru">
+        +
+      </button>
+    </section>
+
+    <!-- My Collections Header & Search -->
+    <section class="section-header">
+      <div class="section-title">
+        <span>📂 My Collections</span>
+      </div>
+      <div class="search-input-box">
+        <span>🔍</span>
+        <input type="text" id="search-input" placeholder="Cari koleksi..." />
+      </div>
+    </section>
+
+    <!-- Responsive Grid for Folders/Collections -->
+    <main class="collections-grid" id="collections-grid-container">
+      <!-- Direct Folders Rendered Here -->
+    </main>
+
+  </div>
+
+  <!-- Modal Edit / Customize Folder & Icon -->
+  <div class="modal-backdrop" id="custom-modal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-heading">Kustomisasi Folder Baru</h2>
+        <button class="btn-neo" id="btn-close-modal" style="padding: 4px 10px; font-size: 1rem;">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label>Target URL / Link</label>
+        <input type="text" id="modal-target-url" class="form-input" readonly style="background: #e9ecef;" />
+      </div>
+
+      <div class="form-group">
+        <label>Nama Folder / Koleksi</label>
+        <input type="text" id="modal-folder-name" class="form-input" placeholder="Masukkan nama koleksi..." />
+      </div>
+
+      <div class="form-group">
+        <label>Pilih Ikon (Emoji)</label>
+        <input type="text" id="modal-folder-icon" class="form-input" placeholder="Ketik atau pilih emoji di bawah" maxLength="4" />
+        <div class="emoji-picker-list" id="emoji-quick-list">
+          <button class="emoji-chip">📁</button>
+          <button class="emoji-chip">⚡</button>
+          <button class="emoji-chip">📖</button>
+          <button class="emoji-chip">☕</button>
+          <button class="emoji-chip">✈️</button>
+          <button class="emoji-chip">💙</button>
+          <button class="emoji-chip">🎮</button>
+          <button class="emoji-chip">🎵</button>
+          <button class="emoji-chip">💻</button>
+          <button class="emoji-chip">🍔</button>
+          <button class="emoji-chip">🚀</button>
+          <button class="emoji-chip">🎨</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Warna Tab Folder</label>
+        <div class="color-picker-list" id="color-picker-list">
+          <!-- Color chips generated dynamically -->
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-neo" id="btn-cancel-modal">Batal</button>
+        <button class="btn-neo btn-neo-yellow" id="btn-save-modal">Simpan Folder</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Config Preset Warna Neo Brutalism
+    const PRESET_COLORS = [
+      '#facc15', // Yellow
+      '#4ade80', // Green
+      '#f472b6', // Pink
+      '#a78bfa', // Purple
+      '#38bdf8', // Blue
+      '#fb923c', // Orange
+      '#a3e635'  // Lime
+    ];
+
+    // Data Bawaan
+    const defaultData = [
+      { id: 'col-1', name: 'Unsorted Links', icon: '📁', color: '#facc15', url: 'https://google.com' },
+      { id: 'col-2', name: 'Must Watch', icon: '⚡', color: '#4ade80', url: 'https://youtube.com' },
+      { id: 'col-3', name: 'Learning & Research', icon: '📖', color: '#a78bfa', url: 'https://github.com' },
+      { id: 'col-4', name: 'Coffee & Chill Spots', icon: '☕', color: '#fb923c', url: 'https://pinterest.com' }
+    ];
+
+    // State Aplikasi
+    let collections = JSON.parse(localStorage.getItem('neo_bookmark_vault')) || defaultData;
+    let editingId = null; // jika sedang edit folder lama
+    let selectedColor = PRESET_COLORS[0];
+
+    // DOM Elements
+    const gridContainer = document.getElementById('collections-grid-container');
+    const mainUrlInput = document.getElementById('main-url-input');
+    const btnPasteClipboard = document.getElementById('btn-paste-clipboard');
+    const btnAddCollection = document.getElementById('btn-add-collection');
+    const searchInput = document.getElementById('search-input');
+
+    // Modal DOM Elements
+    const customModal = document.getElementById('custom-modal');
+    const modalHeading = document.getElementById('modal-heading');
+    const modalTargetUrl = document.getElementById('modal-target-url');
+    const modalFolderName = document.getElementById('modal-folder-name');
+    const modalFolderIcon = document.getElementById('modal-folder-icon');
+    const colorPickerList = document.getElementById('color-picker-list');
+    const emojiQuickList = document.getElementById('emoji-quick-list');
+    const btnSaveModal = document.getElementById('btn-save-modal');
+    const btnCancelModal = document.getElementById('btn-cancel-modal');
+    const btnCloseModal = document.getElementById('btn-close-modal');
+
+    // JSON Import/Export Elements
+    const btnExportJson = document.getElementById('btn-export-json');
+    const btnImportTrigger = document.getElementById('btn-import-trigger');
+    const fileImportInput = document.getElementById('file-import-input');
+
+    // Inisialisasi Color Chips di Modal
+    function initColorPicker() {
+      colorPickerList.innerHTML = '';
+      PRESET_COLORS.forEach(color => {
+        const chip = document.createElement('div');
+        chip.className = `color-chip ${color === selectedColor ? 'selected' : ''}`;
+        chip.style.backgroundColor = color;
+        chip.addEventListener('click', () => {
+          document.querySelectorAll('.color-chip').forEach(c => c.classList.remove('selected'));
+          chip.classList.add('selected');
+          selectedColor = color;
+        });
+        colorPickerList.appendChild(chip);
+      });
+    }
+
+    // Fungsi ekstraksi nama domain otomatis dari URL
+    function extractNameFromUrl(url) {
+      try {
+        let formattedUrl = url;
+        if (!/^https?:\/\//i.test(formattedUrl)) {
+          formattedUrl = 'https://' + formattedUrl;
+        }
+        const parsed = new URL(formattedUrl);
+        let host = parsed.hostname.replace('www.', '');
+        const parts = host.split('.');
+        if (parts.length > 0) {
+          let name = parts[0];
+          return name.charAt(0).toUpperCase() + name.slice(1);
+        }
+        return 'Link Koleksi Baru';
+      } catch (e) {
+        return 'Koleksi Baru';
+      }
+    }
+
+    // Save state ke LocalStorage & re-render
+    function saveStateAndRender() {
+      localStorage.setItem('neo_bookmark_vault', JSON.stringify(collections));
+      renderGrid();
+    }
+
+    // Render Grid Koleksi (Folder)
+    function renderGrid(filterKeyword = '') {
+      gridContainer.innerHTML = '';
+
+      const filtered = collections.filter(item => 
+        item.name.toLowerCase().includes(filterKeyword.toLowerCase()) ||
+        item.url.toLowerCase().includes(filterKeyword.toLowerCase())
+      );
+
+      if (filtered.length === 0) {
+        gridContainer.innerHTML = `
+          <div class="empty-state">
+            <h3>Belum ada folder koleksi</h3>
+            <p>Paste link di atas untuk langsung membuat folder baru!</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card-item';
+
+        card.innerHTML = `
+          <div class="card-tab" style="background-color: ${item.color};"></div>
+          <div class="card-top">
+            <div class="card-icon-box" style="background-color: ${item.color};">
+              ${item.icon || '📁'}
+            </div>
+            <span class="card-badge">1 Link</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">${escapeHtml(item.name)}</div>
+            <div class="card-url-preview">${escapeHtml(item.url)}</div>
+          </div>
+          <div class="card-actions">
+            <button class="btn-card-action" onclick="openFolderUrl('${item.id}')" title="Buka Link">
+              🚀 Buka
+            </button>
+            <button class="btn-card-action" onclick="editFolder('${item.id}')" title="Edit Ikon & Nama">
+              ✏️ Edit
+            </button>
+            <button class="btn-card-action" onclick="deleteFolder('${item.id}')" title="Hapus" style="color: red;">
+              🗑️
+            </button>
+          </div>
+        `;
+
+        gridContainer.appendChild(card);
+      });
+    }
+
+    // Sanitasi HTML
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+      });
+    }
+
+    // Helper penambahan URL lengkap
+    function formatUrl(url) {
+      let trimmed = url.trim();
+      if (!/^https?:\/\//i.test(trimmed)) {
+        return 'https://' + trimmed;
+      }
+      return trimmed;
+    }
+
+    // Handler Tambah Link -> Langsung buat folder baru & buka Modal Kustomisasi
+    function handleAddNewFolder() {
+      const rawUrl = mainUrlInput.value.trim();
+      if (!rawUrl) {
+        alert('Silakan masukkan atau tempel URL terlebih dahulu!');
+        return;
+      }
+
+      const validUrl = formatUrl(rawUrl);
+      editingId = null; // Menandakan pembuat folder baru
+      
+      modalHeading.textContent = 'Kustomisasi Folder Baru';
+      modalTargetUrl.value = validUrl;
+      modalFolderName.value = extractNameFromUrl(validUrl);
+      modalFolderIcon.value = '📁';
+      selectedColor = PRESET_COLORS[Math.floor(Math.random() * PRESET_COLORS.length)];
+      
+      initColorPicker();
+      customModal.classList.add('active');
+    }
+
+    // Edit Folder yang sudah ada
+    window.editFolder = function(id) {
+      const target = collections.find(c => c.id === id);
+      if (!target) return;
+
+      editingId = id;
+      modalHeading.textContent = 'Edit Ikon & Folder';
+      modalTargetUrl.value = target.url;
+      modalFolderName.value = target.name;
+      modalFolderIcon.value = target.icon || '📁';
+      selectedColor = target.color || PRESET_COLORS[0];
+
+      initColorPicker();
+      customModal.classList.add('active');
+    };
+
+    // Open URL
+    window.openFolderUrl = function(id) {
+      const target = collections.find(c => c.id === id);
+      if (target && target.url) {
+        window.open(target.url, '_blank');
+      }
+    };
+
+    // Delete Folder
+    window.deleteFolder = function(id) {
+      if (confirm('Yakin ingin menghapus folder koleksi ini?')) {
+        collections = collections.filter(c => c.id !== id);
+        saveStateAndRender();
+      }
+    };
+
+    // Simpan dari Modal (Create/Edit)
+    btnSaveModal.addEventListener('click', () => {
+      const url = modalTargetUrl.value;
+      const folderName = modalFolderName.value.trim() || 'Untitled Folder';
+      const folderIcon = modalFolderIcon.value.trim() || '📁';
+
+      if (editingId) {
+        // Mode Update
+        const index = collections.findIndex(c => c.id === editingId);
+        if (index !== -1) {
+          collections[index].name = folderName;
+          collections[index].icon = folderIcon;
+          collections[index].color = selectedColor;
+        }
+      } else {
+        // Mode Tambah Baru
+        const newFolder = {
+          id: 'col-' + Date.now(),
+          name: folderName,
+          icon: folderIcon,
+          color: selectedColor,
+          url: url
+        };
+        collections.unshift(newFolder);
+        mainUrlInput.value = ''; // Clear input utama
+      }
+
+      saveStateAndRender();
+      customModal.classList.remove('active');
+    });
+
+    // Close Modal Events
+    btnCancelModal.addEventListener('click', () => customModal.classList.remove('active'));
+    btnCloseModal.addEventListener('click', () => customModal.classList.remove('active'));
+
+    // Quick Select Emoji Chips
+    emojiQuickList.addEventListener('click', (e) => {
+      if (e.target.classList.contains('emoji-chip')) {
+        modalFolderIcon.value = e.target.textContent.trim();
+      }
+    });
+
+    // Paste from Clipboard Button
+    btnPasteClipboard.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          mainUrlInput.value = text;
+        }
+      } catch (err) {
+        alert('Gagal membaca clipboard. Silakan tempel secara manual dengan Ctrl+V.');
+      }
+    });
+
+    // Trigger Tambah dari Tombol Plus & Enter
+    btnAddCollection.addEventListener('click', handleAddNewFolder);
+    mainUrlInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleAddNewFolder();
+      }
+    });
+
+    // Live Search
+    searchInput.addEventListener('input', (e) => {
+      renderGrid(e.target.value);
+    });
+
+    // Export JSON
+    btnExportJson.addEventListener('click', () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(collections, null, 2));
+      const dlAnchorElem = document.createElement('a');
+      dlAnchorElem.setAttribute("href", dataStr);
+      dlAnchorElem.setAttribute("download", `bookmark_collections_${Date.now()}.json`);
+      document.body.appendChild(dlAnchorElem);
+      dlAnchorElem.click();
+      dlAnchorElem.remove();
+    });
+
+    // Import JSON
+    btnImportTrigger.addEventListener('click', () => fileImportInput.click());
+
+    fileImportInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const parsedData = JSON.parse(event.target.result);
+          if (Array.isArray(parsedData)) {
+            collections = parsedData;
+            saveStateAndRender();
+            alert('Berhasil mengimpor data koleksi!');
+          } else {
+            alert('Format file JSON tidak sesuai.');
+          }
+        } catch (err) {
+          alert('Gagal membaca file JSON.');
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    // Init Render
+    initColorPicker();
+    renderGrid();
+  </script>
+</body>
+</html>
